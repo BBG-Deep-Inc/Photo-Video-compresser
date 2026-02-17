@@ -8,6 +8,7 @@ import os
 from dotenv import load_dotenv
 #from chats_models import metadata_obj,chats_table
 import asyncio
+from datetime import datetime,timedelta
 
 
 
@@ -70,9 +71,16 @@ async def create_default_data(username:str):
             except Exception as e:
                 raise Exception(f"Error : {e}")
 async def subscribe(username:str):
+    if not await is_user_exists(username):
+        return 
     async with AsyncSession(async_engine) as conn:
         async with conn.begin():
             try:
-                stmt = ""
+                date_sub = datetime.now().date() + timedelta(days = 30)
+                stmt = main_table.update().where(main_table.c.username == username).values(
+                    sub = True,
+                    date = date_sub
+                )
+                await conn.execute(stmt)
             except Exception as e:
                 raise Exception(f"Error : {e}")
