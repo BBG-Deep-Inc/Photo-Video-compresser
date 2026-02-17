@@ -82,3 +82,16 @@ async def subscribe(username:str):
                 await conn.execute(stmt)
             except Exception as e:
                 raise Exception(f"Error : {e}")
+
+async def is_user_subbed(username:str) -> bool:
+    if not await is_user_exists(username):
+        return
+    async with AsyncSession(async_engine) as conn:
+        try:
+            stmt = select(main_table.c.sub).where(main_table.c.username == username)
+            res = await conn.execute(stmt)
+            data = res.scalar_one_or_none()
+            return data if data is not None else False                
+        except Exception as e:
+            raise Exception(f"Error : {e}")
+                
