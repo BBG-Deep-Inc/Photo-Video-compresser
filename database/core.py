@@ -56,8 +56,19 @@ async def is_user_exists(username:str) -> bool:
             raise Exception(f"Error : {e}")        
  
 async def create_default_data(username:str):
-    pass       
-
+    if not await is_user_exists(username):
+        return
+    async with AsyncSession(async_engine) as conn:
+        async with conn.begin():
+            try:
+                stmt = main_table.insert().values(
+                    username = username,
+                    sub = False,
+                    date = None
+                )
+                await conn.execute(stmt)
+            except Exception as e:
+                raise Exception(f"Error : {e}")
 async def subscribe(username:str):
     async with AsyncSession(async_engine) as conn:
         async with conn.begin():
