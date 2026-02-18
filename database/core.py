@@ -68,6 +68,7 @@ async def create_default_data(username:str):
                 await conn.execute(stmt)
             except Exception as e:
                 raise Exception(f"Error : {e}")
+            
 async def subscribe(username:str):
     if not await is_user_exists(username):
         return 
